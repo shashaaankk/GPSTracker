@@ -25,6 +25,8 @@ public class fileWriter {
         }
 
         File file = new File(storageDir, "data.txt");
+        if (file.exists())
+            file.delete();
         try (FileWriter writer = new FileWriter(file)) {
             for (String item : data) {
                 writer.write(item + "\n");
