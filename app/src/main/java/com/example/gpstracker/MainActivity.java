@@ -52,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
                 float lon = intent.getFloatExtra("lon",0);
                 float speed = intent.getFloatExtra("speed",0);
                 Display.setText("Broadcast Received: "+lat+" "+lon+ " "+ speed);
+                writer.append(lat,lon);
+
             }
         }
     };
@@ -67,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        writer.header();
         Display = findViewById(R.id.display);
         btn = findViewById(R.id.startbtn);
         mPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), new ActivityResultCallback<Map<String, Boolean>>() {
@@ -91,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
             if(serviceIntent!=null) {                //When Called, stop current service and restart another service
                 this.stopService(serviceIntent);
                 try {
+                    writer.footer();
                     writer.write(this);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
