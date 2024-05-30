@@ -31,6 +31,7 @@ import android.widget.TextView;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,6 +43,11 @@ public class MainActivity extends AppCompatActivity {
     private boolean isACCESS_FINE_LOCATION = false;
     private boolean isWRITE_EXTERNAL_STORAGE = false;
     private fileWriter writer = new fileWriter();
+    private float distanceTravelled = 0;
+    private float latitude = 0;
+    private float longitude = 0;
+    private float averageSpeed = 0;
+    Map<String, Object> results = new HashMap<>();
     ActivityResultLauncher<String[]> mPermissionLauncher;
     private final BroadcastReceiver gpsUpdates = new BroadcastReceiver() {
         @Override
@@ -51,12 +57,25 @@ public class MainActivity extends AppCompatActivity {
                 float lat = intent.getFloatExtra("lat",0);
                 float lon = intent.getFloatExtra("lon",0);
                 float speed = intent.getFloatExtra("speed",0);
-                Display.setText("Broadcast Received: "+lat+" "+lon+ " "+ speed);
+                results.put("lat", lat);
+                results.put("lon", lon);
+                results.put("speed", speed);
+                updateDisplay();
+                //Display.setText("Broadcast Received: "+lat+" "+lon+ " "+ speed);
                 writer.append(lat,lon);
 
             }
         }
     };
+    private void updateDisplay() {
+        StringBuilder displayText = new StringBuilder();
+        displayText.append("Latitude: ").append(results.get("lat")).append("\n");
+        displayText.append("Longitude: ").append(results.get("lon")).append("\n");
+        displayText.append("Distance Travelled: ").append(results.get("distance")).append("m\n");
+        displayText.append("Average Speed: ").append(results.get("speed")).append("m/s\n");
+
+        Display.setText(displayText.toString());
+    }
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     @SuppressLint("MissingPermission")
     @Override
