@@ -38,7 +38,8 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity {
     private TextView Display;
     private Intent serviceIntent;
-    private Button btn;
+    private LocationManager locationManager;
+    private Button btn,updt;
     private boolean isACCESS_COARSE_LOCATION = false;
     private boolean isACCESS_FINE_LOCATION = false;
     private boolean isWRITE_EXTERNAL_STORAGE = false;
@@ -57,13 +58,14 @@ public class MainActivity extends AppCompatActivity {
                 float lat = intent.getFloatExtra("lat",0);
                 float lon = intent.getFloatExtra("lon",0);
                 float speed = intent.getFloatExtra("speed",0);
+                float distance = intent.getFloatExtra("distance",0);
                 results.put("lat", lat);
                 results.put("lon", lon);
                 results.put("speed", speed);
+                results.put("distance", distance);
                 updateDisplay();
                 //Display.setText("Broadcast Received: "+lat+" "+lon+ " "+ speed);
                 writer.append(lat,lon);
-
             }
         }
     };
@@ -76,7 +78,6 @@ public class MainActivity extends AppCompatActivity {
 
         Display.setText(displayText.toString());
     }
-    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     @SuppressLint("MissingPermission")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
         writer.header();
         Display = findViewById(R.id.display);
         btn = findViewById(R.id.startbtn);
+        //updt = findViewById(R.id.updatebtn);
         mPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), new ActivityResultCallback<Map<String, Boolean>>() {
             @Override
             //Update Permissions
@@ -112,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
         btn.setOnClickListener(v -> {
             if(serviceIntent!=null) {                //When Called, stop current service and restart another service
                 this.stopService(serviceIntent);
+                Display.setText("Press start to start GPS Service, stop to stop.");
                 try {
                     writer.footer();
                     writer.write(this);
@@ -123,6 +126,7 @@ public class MainActivity extends AppCompatActivity {
             else {
                 serviceIntent = new Intent(this,gpsService.class);
                 this.startService(serviceIntent);
+                Display.setText("No signal recived yet");
             }
         });
     }
